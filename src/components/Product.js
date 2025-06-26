@@ -1,6 +1,6 @@
 import React from 'react';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = '';
 
 const addToCartHelper = (product, quantity = 1) => {
   let cart = [];

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import EditProductModal from './EditProductModal';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = '';
 
 function getImageUrl(img) {
   return img && img.startsWith('/images/') ? API_BASE + img : img;

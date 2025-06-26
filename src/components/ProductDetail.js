@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = '';
 
 const addToCartHelper = (product, quantity = 1) => {
   let cart = [];

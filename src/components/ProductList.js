@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Product from './Product';
 import QuickViewModal from './QuickViewModal';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = '';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
