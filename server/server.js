@@ -138,6 +138,21 @@ app.put('/api/products/:id', upload.array('images'), (req, res) => {
   res.json(products[productIndex]);
 });
 
+// Serve React frontend static files
+const buildPath = path.join(__dirname, 'build');
+if (fs.existsSync(buildPath)) {
+  app.use(express.static(buildPath));
+  // Catch-all to serve index.html for client-side routing
+  app.get('*', (req, res) => {
+    // Only serve index.html if the request is not for an API or static asset
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/images')) {
+      res.sendFile(path.join(buildPath, 'index.html'));
+    } else {
+      res.status(404).send('Not found');
+    }
+  });
+}
+
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
 }); 

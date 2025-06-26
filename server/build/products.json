@@ -1,0 +1,71 @@
+[
+  {
+    "id": 1,
+    "name": "Surgical Sessiors",
+    "category": "surgical",
+    "price": 129.99,
+    "description": "Surgical scissors are precision instruments used in medical procedures for cutting tissues, sutures, or materials with sharp, durable blades.",
+    "images": [
+      "/images/5.png",
+      "/images/2.png"
+    ],
+    "rating": 4.8,
+    "reviews": 42,
+    "featured": true
+  },
+  {
+    "id": 2,
+    "name": "Royal Salt Lamp",
+    "category": "special",
+    "price": "69.99",
+    "description": "A pink salt lamp is a decorative light made from Himalayan salt, believed to purify air and create a calming ambiance.",
+    "images": [
+      "/images/9.png"
+    ],
+    "rating": 4.5,
+    "reviews": 73,
+    "featured": true
+  },
+  {
+    "id": 3,
+    "name": "Surgical Cutters",
+    "category": "surgical",
+    "price": "69.99",
+    "description": "Surgical cutters are specialized instruments designed for precise cutting of tissues, sutures, or medical materials during surgical procedures.",
+    "images": [
+      "/images/1.png",
+      "/images/4.png"
+    ],
+    "rating": 4.5,
+    "reviews": 73,
+    "featured": true
+  },
+  {
+    "id": 4,
+    "name": "Surgical Cutters 2",
+    "category": "surgical",
+    "price": 69.99,
+    "description": "Surgical cutters are specialized instruments designed for precise cutting of tissues, sutures, or medical materials during surgical procedures.",
+    "images": [
+      "/images/4.png",
+      "/images/1.png"
+    ],
+    "rating": 4.5,
+    "reviews": 73,
+    "featured": true
+  },
+  {
+    "id": 5,
+    "name": "Surgical Sessiors 2",
+    "category": "surgical",
+    "price": 129.99,
+    "description": "Surgical scissors are precision instruments used in medical procedures for cutting tissues, sutures, or materials with sharp, durable blades.",
+    "images": [
+      "/images/2.png",
+      "/images/5.png"
+    ],
+    "rating": 4.8,
+    "reviews": 42,
+    "featured": true
+  }
+]
