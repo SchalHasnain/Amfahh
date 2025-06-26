@@ -1,5 +1,7 @@
 import React from 'react';
 
+const API_BASE = 'http://localhost:5000';
+
 const addToCartHelper = (product, quantity = 1) => {
   let cart = [];
   try {
@@ -15,11 +17,13 @@ const addToCartHelper = (product, quantity = 1) => {
   window.dispatchEvent(new Event('cartUpdated'));
 };
 
+const getImageUrl = (img) => img && img.startsWith('/images/') ? API_BASE + img : img;
+
 const Product = ({ product }) => {
   // Defensive: get the first image from images array or fallback to image string or a placeholder
   let imageSrc = '';
-  if (Array.isArray(product.images) && product.images.length > 0) imageSrc = product.images[0];
-  else if (product.image) imageSrc = product.image;
+  if (Array.isArray(product.images) && product.images.length > 0) imageSrc = getImageUrl(product.images[0]);
+  else if (product.image) imageSrc = getImageUrl(product.image);
   else imageSrc = '/images/placeholder.png'; // You can add a placeholder image in public/images
 
   const handleAddToCart = (e) => {

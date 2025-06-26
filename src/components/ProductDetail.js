@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const API_BASE = 'https://amfah-server-production.up.railway.app';
+const API_BASE = 'http://localhost:5000';
 
 const addToCartHelper = (product, quantity = 1) => {
   let cart = [];
@@ -18,6 +18,8 @@ const addToCartHelper = (product, quantity = 1) => {
   localStorage.setItem('cart', JSON.stringify(cart));
   window.dispatchEvent(new Event('cartUpdated'));
 };
+
+const getImageUrl = (img) => img && img.startsWith('/images/') ? API_BASE + img : img;
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -82,7 +84,7 @@ const ProductDetail = () => {
                 {product.images.map((img, idx) => (
                   <div className={`carousel-item${selectedImage === img ? ' active' : ''}`} key={idx}>
                     <img
-                      src={img}
+                      src={getImageUrl(img)}
                       className="d-block w-100 rounded shadow border border-primary"
                       alt={product.name}
                       style={{ maxHeight: '400px', objectFit: 'contain' }}
@@ -113,7 +115,7 @@ const ProductDetail = () => {
             {product.images.map((img, index) => (
               <img
                 key={index}
-                src={img}
+                src={getImageUrl(img)}
                 className={`img-thumbnail mx-1 ${selectedImage === img ? 'border border-success border-3' : ''}`}
                 alt={`Thumbnail ${index + 1}`}
                 style={{ width: '60px', cursor: 'pointer' }}
@@ -145,7 +147,7 @@ const ProductDetail = () => {
                     {suggestedProducts.slice(idx, idx + 4).map((prod, i) => (
                       <div className="card shadow-sm mx-2" style={{ maxWidth: 200 }} key={prod.id}>
                         <img
-                          src={Array.isArray(prod.images) ? prod.images[0] : prod.image}
+                          src={getImageUrl(Array.isArray(prod.images) ? prod.images[0] : prod.image)}
                           className="card-img-top"
                           alt={prod.name}
                           style={{ height: '120px', objectFit: 'cover' }}

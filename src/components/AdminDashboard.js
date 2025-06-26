@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import EditProductModal from './EditProductModal';
 
+const API_BASE = 'http://localhost:5000';
+
+function getImageUrl(img) {
+  return img && img.startsWith('/images/') ? API_BASE + img : img;
+}
+
 function AdminDashboard({ onLogout }) {
   const [products, setProducts] = useState([]);
   const [name, setName] = useState('');
@@ -23,7 +29,7 @@ function AdminDashboard({ onLogout }) {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch('https://amfah-server-production.up.railway.app/api/products');
+      const res = await fetch(`${API_BASE}/api/products`);
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -72,7 +78,7 @@ function AdminDashboard({ onLogout }) {
       for (let i = 0; i < update.newImages.length; i++) {
         formData.append('images', update.newImages[i]);
       }
-      const res = await fetch('https://amfah-server-production.up.railway.app/api/products', {
+      const res = await fetch(`${API_BASE}/api/products`, {
         method: 'POST',
         body: formData
       });
@@ -89,7 +95,7 @@ function AdminDashboard({ onLogout }) {
     if (!window.confirm('Delete this product?')) return;
     setLoading(true);
     try {
-      const res = await fetch(`https://amfah-server-production.up.railway.app/api/products/${id}`, {
+      const res = await fetch(`${API_BASE}/api/products/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error('Failed to delete product');
@@ -113,7 +119,7 @@ function AdminDashboard({ onLogout }) {
       for (let i = 0; i < update.newImages.length; i++) {
         formData.append('images', update.newImages[i]);
       }
-      const res = await fetch(`https://amfah-server-production.up.railway.app/api/products/${update.id}`, {
+      const res = await fetch(`${API_BASE}/api/products/${update.id}`, {
         method: 'PUT',
         body: formData
       });
@@ -205,9 +211,9 @@ function AdminDashboard({ onLogout }) {
                 <td>
                   {Array.isArray(product.images)
                     ? product.images.map((img, idx) => (
-                        <img key={idx} src={img} alt="" style={{ width: 60, marginRight: 4, borderRadius: 6, border: '1px solid #eee' }} />
+                        <img key={idx} src={getImageUrl(img)} alt="" style={{ width: 60, marginRight: 4, borderRadius: 6, border: '1px solid #eee' }} />
                       ))
-                    : product.image && <img src={product.image} alt="" style={{ width: 60, borderRadius: 6, border: '1px solid #eee' }} />}
+                    : product.image && <img src={getImageUrl(product.image)} alt="" style={{ width: 60, borderRadius: 6, border: '1px solid #eee' }} />}
                 </td>
                 <td>
                   <button className="btn btn-warning btn-sm me-2" onClick={() => { setEditProduct(product); setShowEditModal(true); }}>Edit</button>
