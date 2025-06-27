@@ -126,7 +126,7 @@ const ProductDetail = () => {
         </div>
         <div className="col-md-6">
           <h2 className="mb-3">{product.name}</h2>
-          <p className="text-muted">{product.category}</p>
+          <p className="text-muted">Category: {product.category}</p>
           <p>{product.description}</p>
           <div className="d-flex gap-2 mt-4">
             <button className="btn btn-primary btn-lg" onClick={handleAddToCart}>Add to Cart</button>
