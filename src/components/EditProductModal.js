@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const EditProductModal = ({ show, onHide, product, onSave }) => {
+const EditProductModal = ({ show, onHide, product, onSave, categories = [] }) => {
   const [name, setName] = useState(product?.name || '');
   const [description, setDescription] = useState(product?.description || '');
   const [price, setPrice] = useState(product?.price || '');
@@ -58,8 +58,14 @@ const EditProductModal = ({ show, onHide, product, onSave }) => {
             <div className="mb-3">
               <label className="form-label">Category</label>
               <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
-                <option value="surgical">Surgical</option>
-                <option value="special">Special</option>
+                {categories.length > 0 ? (
+                  categories.map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>)
+                ) : (
+                  <>
+                    <option value="surgical">Surgical</option>
+                    <option value="special">Special</option>
+                  </>
+                )}
               </select>
             </div>
             <div className="mb-3">

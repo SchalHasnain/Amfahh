@@ -230,9 +230,15 @@ function AdminDashboard({ onLogout }) {
         <table className="table table-striped table-hover align-middle border rounded shadow-sm">
           <thead className="table-light">
             <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Description</th>
+              <th style={{cursor: 'pointer'}} onClick={() => { setSortBy('name'); setSortDir(sortBy === 'name' && sortDir === 'asc' ? 'desc' : 'asc'); }}>
+                Name {sortBy === 'name' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th style={{cursor: 'pointer'}} onClick={() => { setSortBy('category'); setSortDir(sortBy === 'category' && sortDir === 'asc' ? 'desc' : 'asc'); }}>
+                Category {sortBy === 'category' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th style={{cursor: 'pointer'}} onClick={() => { setSortBy('description'); setSortDir(sortBy === 'description' && sortDir === 'asc' ? 'desc' : 'asc'); }}>
+                Description {sortBy === 'description' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
               <th>Images</th>
               <th>Action</th>
             </tr>
@@ -283,13 +289,17 @@ function AdminDashboard({ onLogout }) {
         onHide={() => setShowEditModal(false)}
         product={editProduct}
         onSave={handleEditProduct}
+        categories={customCategories}
       />
-      <EditProductModal
-        show={addModal}
-        onHide={() => setAddModal(false)}
-        product={{ name: '', description: '', price: '', category: '', images: [] }}
-        onSave={handleAddProduct}
-      />
+      {addModal && (
+        <EditProductModal
+          show={addModal}
+          onHide={() => setAddModal(false)}
+          product={{ name: '', description: '', price: '', category: '', images: [] }}
+          onSave={handleAddProduct}
+          categories={customCategories}
+        />
+      )}
       {error && <div className="alert alert-danger mt-3">{error}</div>}
     </div>
   );

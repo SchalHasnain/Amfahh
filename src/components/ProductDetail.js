@@ -19,7 +19,7 @@ const addToCartHelper = (product, quantity = 1) => {
   window.dispatchEvent(new Event('cartUpdated'));
 };
 
-const getImageUrl = (img) => img && img.startsWith('/images/') ? API_BASE + img : img;
+const getImageUrl = (img) => img;
 
 const ProductDetail = () => {
   const { id } = useParams();
