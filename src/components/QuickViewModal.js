@@ -46,7 +46,6 @@ const QuickViewModal = ({ show, onHide, product }) => {
               <div className="col-md-6">
                 <h4>{product.name}</h4>
                 <p className="text-muted">{product.category}</p>
-                <h5 className="text-primary mb-3">${product.price}</h5>
                 <p>{product.description}</p>
                 <button className="btn btn-primary me-2">Add to Cart</button>
                 <button className="btn btn-success">Buy Now</button>

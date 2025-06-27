@@ -25,6 +25,8 @@ function AdminDashboard({ onLogout }) {
   const [addModal, setAddModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
+  const [customCategories, setCustomCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState('');
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -40,13 +42,15 @@ function AdminDashboard({ onLogout }) {
 
   useEffect(() => {
     fetchProducts();
+    const stored = localStorage.getItem('categories');
+    if (stored) setCustomCategories(JSON.parse(stored));
   }, []);
 
   // Stats
   const totalProducts = products.length;
   const totalCategories = new Set(products.map(p => p.category || 'uncategorized')).size;
   const totalImages = products.reduce((sum, p) => sum + (Array.isArray(p.images) ? p.images.length : 0), 0);
-  const categories = ['all', ...Array.from(new Set(products.map(p => p.category || 'uncategorized')))].filter(Boolean);
+  const categories = ['all', ...customCategories.length ? customCategories : Array.from(new Set(products.map(p => p.category || 'uncategorized')))].filter(Boolean);
 
   // Filter, search, sort
   let filtered = products;
@@ -133,6 +137,21 @@ function AdminDashboard({ onLogout }) {
     setLoading(false);
   };
 
+  const handleAddCategory = () => {
+    if (newCategory && !customCategories.includes(newCategory)) {
+      const updated = [...customCategories, newCategory];
+      setCustomCategories(updated);
+      localStorage.setItem('categories', JSON.stringify(updated));
+      setNewCategory('');
+    }
+  };
+
+  const handleRemoveCategory = (cat) => {
+    const updated = customCategories.filter(c => c !== cat);
+    setCustomCategories(updated);
+    localStorage.setItem('categories', JSON.stringify(updated));
+  };
+
   return (
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -188,6 +207,24 @@ function AdminDashboard({ onLogout }) {
           <button className="btn btn-link" onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}>{sortDir === 'asc' ? '↑' : '↓'}</button>
         </div>
       </div>
+      {/* Add a section for managing categories above the product table */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">Manage Categories</h5>
+          <div className="d-flex align-items-center mb-2">
+            <input type="text" className="form-control me-2" placeholder="New category" value={newCategory} onChange={e => setNewCategory(e.target.value)} />
+            <button className="btn btn-success" onClick={handleAddCategory}>Add</button>
+          </div>
+          <ul className="list-group list-group-flush">
+            {customCategories.map(cat => (
+              <li key={cat} className="list-group-item d-flex justify-content-between align-items-center">
+                {cat}
+                <button className="btn btn-sm btn-danger" onClick={() => handleRemoveCategory(cat)}>Remove</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
       {/* Product Table */}
       <div className="table-responsive">
         <table className="table table-striped table-hover align-middle border rounded shadow-sm">
@@ -196,7 +233,6 @@ function AdminDashboard({ onLogout }) {
               <th>Name</th>
               <th>Category</th>
               <th>Description</th>
-              <th>Price</th>
               <th>Images</th>
               <th>Action</th>
             </tr>
@@ -207,7 +243,6 @@ function AdminDashboard({ onLogout }) {
                 <td className="fw-semibold">{product.name}</td>
                 <td>{product.category || 'uncategorized'}</td>
                 <td style={{ maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.description}</td>
-                <td>${product.price}</td>
                 <td>
                   {Array.isArray(product.images)
                     ? product.images.map((img, idx) => (

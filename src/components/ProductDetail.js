@@ -95,11 +95,11 @@ const ProductDetail = () => {
               {product.images.length > 1 && (
                 <>
                   <button className="carousel-control-prev" type="button" data-bs-target="#productDetailCarousel" data-bs-slide="prev">
-                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span className="carousel-control-prev-icon" aria-hidden="true" style={{ backgroundColor: '#007bff', borderRadius: '50%' }}></span>
                     <span className="visually-hidden">Previous</span>
                   </button>
                   <button className="carousel-control-next" type="button" data-bs-target="#productDetailCarousel" data-bs-slide="next">
-                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span className="carousel-control-next-icon" aria-hidden="true" style={{ backgroundColor: '#007bff', borderRadius: '50%' }}></span>
                     <span className="visually-hidden">Next</span>
                   </button>
                 </>
@@ -127,7 +127,6 @@ const ProductDetail = () => {
         <div className="col-md-6">
           <h2 className="mb-3">{product.name}</h2>
           <p className="text-muted">{product.category}</p>
-          <h4 className="text-primary mb-3">${product.price}</h4>
           <p>{product.description}</p>
           <div className="d-flex gap-2 mt-4">
             <button className="btn btn-primary btn-lg" onClick={handleAddToCart}>Add to Cart</button>
@@ -165,11 +164,11 @@ const ProductDetail = () => {
             {suggestedProducts.length > 4 && (
               <>
                 <button className="carousel-control-prev" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="prev">
-                  <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span className="carousel-control-prev-icon" aria-hidden="true" style={{ backgroundColor: '#007bff', borderRadius: '50%' }}></span>
                   <span className="visually-hidden">Previous</span>
                 </button>
                 <button className="carousel-control-next" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="next">
-                  <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span className="carousel-control-next-icon" aria-hidden="true" style={{ backgroundColor: '#007bff', borderRadius: '50%' }}></span>
                   <span className="visually-hidden">Next</span>
                 </button>
               </>

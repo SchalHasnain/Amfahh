@@ -45,8 +45,6 @@ const CartModal = () => {
     updateCart(newCart);
   };
 
-  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
   const handleCheckoutClose = () => {
     setShowCheckout(false);
     setToastMsg('Order placed successfully!');
@@ -75,10 +73,7 @@ const CartModal = () => {
                       <tr>
                         <th>Product</th>
                         <th></th>
-                        <th>Price</th>
                         <th>Qty</th>
-                        <th>Total</th>
-                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -88,7 +83,6 @@ const CartModal = () => {
                             <img src={Array.isArray(item.images) ? item.images[0] : item.image} alt={item.name} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }} />
                           </td>
                           <td>{item.name}</td>
-                          <td>${item.price}</td>
                           <td>
                             <div className="d-flex align-items-center gap-2">
                               <button className="btn btn-sm btn-outline-secondary" onClick={() => handleQuantity(item.id, -1)}>-</button>
@@ -96,7 +90,6 @@ const CartModal = () => {
                               <button className="btn btn-sm btn-outline-secondary" onClick={() => handleQuantity(item.id, 1)}>+</button>
                             </div>
                           </td>
-                          <td>${(item.price * item.quantity).toFixed(2)}</td>
                           <td>
                             <button className="btn btn-sm btn-danger" onClick={() => handleRemove(item.id)}>&times;</button>
                           </td>
@@ -106,9 +99,6 @@ const CartModal = () => {
                   </table>
                 </div>
               )}
-              <div className="mt-3 text-end">
-                <h5>Total: <span className="text-primary">${total.toFixed(2)}</span></h5>
-              </div>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">

@@ -23,7 +23,14 @@ const ProductList = () => {
         const validProducts = data.filter(product => product.name && (Array.isArray(product.images) ? product.images.length : !!product.image));
         setProducts(validProducts);
         setFilteredProducts(validProducts);
-        const uniqueCategories = [...new Set(validProducts.map((product) => product.category || 'uncategorized'))];
+        // Fetch categories from localStorage if available
+        const stored = localStorage.getItem('categories');
+        let uniqueCategories = [];
+        if (stored) {
+          uniqueCategories = JSON.parse(stored);
+        } else {
+          uniqueCategories = [...new Set(validProducts.map((product) => product.category || 'uncategorized'))];
+        }
         setCategories(['all', ...uniqueCategories]);
         setLoading(false);
       })
