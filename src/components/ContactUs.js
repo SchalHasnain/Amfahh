@@ -48,35 +48,28 @@ const ContactUs = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.name || !formData.email || !formData.message) {
       setAlert({ show: true, type: "danger", message: "All fields are required!" });
       return;
     }
-
-    const currentDateTime = new Date().toISOString().slice(0, 19).replace("T", " ");
-
-    emailjs
-      .send(
-        "service_pez9035",
-        "template_jkhxfe8",
-        {
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          message: formData.message,
-          time: currentDateTime,
-        },
-        "NF3zELHejbd242DU3"
-      )
-      .then(() => {
-        setAlert({ show: true, type: "success", message: "Message sent successfully!" });
-        setFormData({ name: "", email: "", message: "" });
-      })
-      .catch(() => {
-        setAlert({ show: true, type: "danger", message: "Failed to send message. Try again." });
+          message: formData.message
+        })
       });
+      if (!res.ok) throw new Error('Failed to send message');
+      setAlert({ show: true, type: "success", message: "Message sent successfully!" });
+      setFormData({ name: "", email: "", message: "" });
+    } catch {
+      setAlert({ show: true, type: "danger", message: "Failed to send message. Try again." });
+    }
   };
 
   // Load map button handler

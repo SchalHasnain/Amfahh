@@ -17,33 +17,38 @@ const ProductList = () => {
   const [showQuickView, setShowQuickView] = useState(false);
 
   useEffect(() => {
+    // Fetch products
     fetch(`${API_BASE}/api/products`)
       .then((response) => response.json())
       .then((data) => {
         const validProducts = data.filter(product => product.name && (Array.isArray(product.images) ? product.images.length : !!product.image));
         setProducts(validProducts);
         setFilteredProducts(validProducts);
-        // Fetch categories from localStorage if available
-        const stored = localStorage.getItem('categories');
-        let uniqueCategories = [];
-        if (stored) {
-          uniqueCategories = JSON.parse(stored);
-        } else {
-          uniqueCategories = [...new Set(validProducts.map((product) => product.category || 'uncategorized'))];
-        }
-        setCategories(['all', ...uniqueCategories]);
         setLoading(false);
       })
       .catch((error) => {
         setError(error.message);
         setLoading(false);
       });
+    // Fetch categories from backend
+    fetch(`${API_BASE}/api/categories`)
+      .then((response) => response.json())
+      .then((data) => {
+        setCategories(data);
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
   }, []);
 
   useEffect(() => {
     let filtered = products;
     if (activeCategory !== 'all') {
-      filtered = filtered.filter((product) => (product.category || 'uncategorized') === activeCategory);
+      filtered = filtered.filter((product) => {
+        const prodCat = (product.category || 'uncategorized').toLowerCase();
+        const activeCat = activeCategory.toLowerCase();
+        return prodCat === activeCat;
+      });
     }
     if (searchQuery) {
       filtered = filtered.filter(
@@ -71,13 +76,21 @@ const ProductList = () => {
     <div className="container">
       {/* Category Tabs */}
       <ul className="nav nav-tabs mb-4" data-aos="fade-up">
+        <li className="nav-item" key="all">
+          <button
+            className={`nav-link ${activeCategory === 'all' ? 'active' : ''}`}
+            onClick={() => setActiveCategory('all')}
+          >
+            All
+          </button>
+        </li>
         {categories.map((category) => (
-          <li className="nav-item" key={category}>
+          <li className="nav-item" key={category.id}>
             <button
-              className={`nav-link ${activeCategory === category ? 'active' : ''}`}
-              onClick={() => setActiveCategory(category)}
+              className={`nav-link ${activeCategory === category.name ? 'active' : ''}`}
+              onClick={() => setActiveCategory(category.name)}
             >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
+              {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
             </button>
           </li>
         ))}

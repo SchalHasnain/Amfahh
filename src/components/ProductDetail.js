@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -19,7 +19,7 @@ const addToCartHelper = (product, quantity = 1) => {
   window.dispatchEvent(new Event('cartUpdated'));
 };
 
-const getImageUrl = (img) => img;
+const getImageUrl = (img) => img && img.startsWith('/images/') ? API_BASE + img : img;
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -28,6 +28,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
+  const carouselRef = useRef(null);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/products`)
@@ -54,6 +55,31 @@ const ProductDetail = () => {
       });
   }, [id]);
 
+  // Sync carousel when selectedImage changes
+  useEffect(() => {
+    if (!carouselRef.current || !product || !product.images) return;
+    const idx = product.images.findIndex(img => img === selectedImage);
+    if (window.bootstrap && carouselRef.current && idx !== -1) {
+      const carousel = window.bootstrap.Carousel.getOrCreateInstance(carouselRef.current);
+      carousel.to(idx);
+    }
+  }, [selectedImage, product]);
+
+  // Listen for carousel slide event to update selectedImage
+  useEffect(() => {
+    if (!carouselRef.current || !product || !product.images) return;
+    const handleSlide = (e) => {
+      const idx = Array.from(carouselRef.current.querySelectorAll('.carousel-item')).findIndex(item => item.classList.contains('active'));
+      if (idx !== -1 && product.images[idx] !== selectedImage) {
+        setSelectedImage(product.images[idx]);
+      }
+    };
+    carouselRef.current.addEventListener('slid.bs.carousel', handleSlide);
+    return () => {
+      carouselRef.current.removeEventListener('slid.bs.carousel', handleSlide);
+    };
+  }, [product, selectedImage]);
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     if (!product) return;
@@ -79,7 +105,7 @@ const ProductDetail = () => {
         <div className="col-md-6 text-center">
           {/* Bootstrap Carousel for images */}
           {product.images.length > 0 ? (
-            <div id="productDetailCarousel" className="carousel slide mb-3" data-bs-ride="carousel">
+            <div id="productDetailCarousel" className="carousel slide mb-3" data-bs-ride="carousel" ref={carouselRef}>
               <div className="carousel-inner">
                 {product.images.map((img, idx) => (
                   <div className={`carousel-item${selectedImage === img ? ' active' : ''}`} key={idx}>
@@ -126,7 +152,7 @@ const ProductDetail = () => {
         </div>
         <div className="col-md-6">
           <h2 className="mb-3">{product.name}</h2>
-          <p className="text-muted">Category: {product.category}</p>
+          <p className="text-muted"><strong>Category:</strong> {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1).toLowerCase() : 'Uncategorized'}</p>
           <p>{product.description}</p>
           <div className="d-flex gap-2 mt-4">
             <button className="btn btn-primary btn-lg" onClick={handleAddToCart}>Add to Cart</button>
@@ -136,7 +162,7 @@ const ProductDetail = () => {
       </div>
       {/* Related Products Carousel (multi-item) */}
       {suggestedProducts.length > 0 && (
-        <div className="mt-5" data-aos="fade-up">
+        <div className="mt-5" data-aos="fade-up" style={{ minHeight: 320 }}>
           <h3>Related Products</h3>
           <div id="relatedProductsCarousel" className="carousel slide" data-bs-ride="carousel">
             <div className="carousel-inner">
@@ -144,15 +170,20 @@ const ProductDetail = () => {
                 <div className={`carousel-item${idx === 0 ? ' active' : ''}`} key={suggestedProduct.id}>
                   <div className="d-flex flex-row justify-content-center gap-3">
                     {suggestedProducts.slice(idx, idx + 4).map((prod, i) => (
-                      <div className="card shadow-sm mx-2" style={{ maxWidth: 200 }} key={prod.id}>
+                      <div className="card shadow-sm mx-2 d-flex align-items-stretch" style={{ maxWidth: 200, minWidth: 200, minHeight: 260, height: 260 }} key={prod.id}>
                         <img
                           src={getImageUrl(Array.isArray(prod.images) ? prod.images[0] : prod.image)}
                           className="card-img-top"
                           alt={prod.name}
                           style={{ height: '120px', objectFit: 'cover' }}
                         />
-                        <div className="card-body text-center">
-                          <h6 className="card-title">{prod.name}</h6>
+                        <div className="card-body text-center d-flex flex-column justify-content-between" style={{ height: 100 }}>
+                          <h6 className="card-title" style={{ minHeight: 40, maxHeight: 40, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={prod.name}>
+                            {prod.name}
+                          </h6>
+                          <div className="text-muted" style={{ fontSize: 13, minHeight: 18 }}>
+                            {prod.category ? prod.category.charAt(0).toUpperCase() + prod.category.slice(1).toLowerCase() : 'Uncategorized'}
+                          </div>
                           <Link to={`/product/${prod.id}`} className="btn btn-outline-primary btn-sm mt-2">View</Link>
                         </div>
                       </div>

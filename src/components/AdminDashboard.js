@@ -25,8 +25,19 @@ function AdminDashboard({ onLogout }) {
   const [addModal, setAddModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  const [customCategories, setCustomCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingCategoryName, setEditingCategoryName] = useState('');
+  const [feedback, setFeedback] = useState([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackError, setFeedbackError] = useState('');
+  const [systemEmails, setSystemEmails] = useState([]);
+  const [newSystemEmail, setNewSystemEmail] = useState('');
+  const [systemEmailError, setSystemEmailError] = useState('');
+  const [smtpCredentials, setSmtpCredentials] = useState([]);
+  const [smtpForm, setSmtpForm] = useState({ host: '', port: '', smtp_user: '', pass: '', from_email: '' });
+  const [smtpError, setSmtpError] = useState('');
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -40,17 +51,61 @@ function AdminDashboard({ onLogout }) {
     setLoading(false);
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/categories`);
+      const data = await res.json();
+      setCategories(data);
+    } catch (err) {
+      setError('Failed to load categories: ' + err.message);
+    }
+  };
+
+  const fetchFeedback = async () => {
+    setFeedbackLoading(true);
+    try {
+      const res = await fetch('/api/feedback');
+      const data = await res.json();
+      setFeedback(data);
+    } catch (err) {
+      setFeedbackError('Failed to load feedback: ' + err.message);
+    }
+    setFeedbackLoading(false);
+  };
+
+  const fetchSystemEmails = async () => {
+    try {
+      const res = await fetch('/api/system-emails');
+      const data = await res.json();
+      setSystemEmails(data);
+    } catch (err) {
+      setSystemEmailError('Failed to load system emails.');
+    }
+  };
+
+  const fetchSmtpCredentials = async () => {
+    try {
+      const res = await fetch('/api/smtp-credentials');
+      const data = await res.json();
+      setSmtpCredentials(data);
+    } catch (err) {
+      setSmtpError('Failed to load SMTP credentials.');
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
-    const stored = localStorage.getItem('categories');
-    if (stored) setCustomCategories(JSON.parse(stored));
+    fetchCategories();
+    fetchFeedback();
+    fetchSystemEmails();
+    fetchSmtpCredentials();
   }, []);
 
   // Stats
   const totalProducts = products.length;
   const totalCategories = new Set(products.map(p => p.category || 'uncategorized')).size;
   const totalImages = products.reduce((sum, p) => sum + (Array.isArray(p.images) ? p.images.length : 0), 0);
-  const categories = ['all', ...customCategories.length ? customCategories : Array.from(new Set(products.map(p => p.category || 'uncategorized')))].filter(Boolean);
+  const categoriesList = ['all', ...categories.map(c => c.name)].filter(Boolean);
 
   // Filter, search, sort
   let filtered = products;
@@ -137,19 +192,144 @@ function AdminDashboard({ onLogout }) {
     setLoading(false);
   };
 
-  const handleAddCategory = () => {
-    if (newCategory && !customCategories.includes(newCategory)) {
-      const updated = [...customCategories, newCategory];
-      setCustomCategories(updated);
-      localStorage.setItem('categories', JSON.stringify(updated));
+  const handleAddCategory = async () => {
+    if (!newCategory.trim()) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newCategory })
+      });
+      if (!res.ok) throw new Error('Failed to add category');
       setNewCategory('');
+      fetchCategories();
+    } catch (err) {
+      setError('Failed to add category: ' + err.message);
     }
   };
 
-  const handleRemoveCategory = (cat) => {
-    const updated = customCategories.filter(c => c !== cat);
-    setCustomCategories(updated);
-    localStorage.setItem('categories', JSON.stringify(updated));
+  const handleRemoveCategory = async (id) => {
+    if (!window.confirm('Delete this category?')) return;
+    try {
+      // You may want to implement a DELETE endpoint for categories
+      // For now, just hide from UI (or implement soft delete)
+      // setCategories(categories.filter(c => c.id !== id));
+      setError('Category deletion not implemented.');
+    } catch (err) {
+      setError('Failed to remove category: ' + err.message);
+    }
+  };
+
+  const startEditCategory = (cat) => {
+    setEditingCategory(cat.id);
+    setEditingCategoryName(cat.name);
+  };
+
+  const saveEditCategory = async (cat) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/categories/${cat.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editingCategoryName })
+      });
+      if (!res.ok) throw new Error('Failed to update category');
+      setEditingCategory(null);
+      setEditingCategoryName('');
+      fetchCategories();
+    } catch (err) {
+      setError('Failed to update category: ' + err.message);
+    }
+  };
+
+  const moveCategory = async (index, direction) => {
+    const newOrder = [...categories];
+    const targetIdx = direction === 'up' ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= newOrder.length) return;
+    // Swap display_order
+    const temp = newOrder[index].display_order;
+    newOrder[index].display_order = newOrder[targetIdx].display_order;
+    newOrder[targetIdx].display_order = temp;
+    // Sort by display_order
+    newOrder.sort((a, b) => a.display_order - b.display_order);
+    setCategories([...newOrder]);
+    // Send new order to backend
+    try {
+      await fetch(`${API_BASE}/api/categories/reorder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: newOrder.map((cat, i) => ({ id: cat.id, display_order: i })) })
+      });
+      fetchCategories();
+    } catch (err) {
+      setError('Failed to reorder categories: ' + err.message);
+    }
+  };
+
+  const handleToggleShowOnHome = async (id, show) => {
+    try {
+      await fetch(`/api/feedback/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ show_on_home: !show })
+      });
+      fetchFeedback();
+    } catch (err) {
+      setFeedbackError('Failed to update feedback.');
+    }
+  };
+
+  const handleAddSystemEmail = async () => {
+    if (!newSystemEmail) return;
+    try {
+      const res = await fetch('/api/system-emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newSystemEmail })
+      });
+      if (!res.ok) throw new Error('Failed to add email');
+      setNewSystemEmail('');
+      fetchSystemEmails();
+    } catch (err) {
+      setSystemEmailError('Failed to add email.');
+    }
+  };
+
+  const handleRemoveSystemEmail = async (id) => {
+    try {
+      await fetch(`/api/system-emails/${id}`, { method: 'DELETE' });
+      fetchSystemEmails();
+    } catch (err) {
+      setSystemEmailError('Failed to remove email.');
+    }
+  };
+
+  const handleSmtpFormChange = (e) => {
+    setSmtpForm({ ...smtpForm, [e.target.name]: e.target.value });
+  };
+
+  const handleAddSmtpCredential = async () => {
+    if (!smtpForm.host || !smtpForm.port || !smtpForm.smtp_user || !smtpForm.pass || !smtpForm.from_email) return;
+    try {
+      const res = await fetch('/api/smtp-credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(smtpForm)
+      });
+      if (!res.ok) throw new Error('Failed to add SMTP credential');
+      setSmtpForm({ host: '', port: '', smtp_user: '', pass: '', from_email: '' });
+      fetchSmtpCredentials();
+    } catch (err) {
+      setSmtpError('Failed to add SMTP credential.');
+    }
+  };
+
+  const handleRemoveSmtpCredential = async (id) => {
+    try {
+      await fetch(`/api/smtp-credentials/${id}`, { method: 'DELETE' });
+      fetchSmtpCredentials();
+    } catch (err) {
+      setSmtpError('Failed to remove SMTP credential.');
+    }
   };
 
   return (
@@ -195,7 +375,7 @@ function AdminDashboard({ onLogout }) {
         </div>
         <div className="col-md-4 mb-2">
           <select className="form-select" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
-            {categories.map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>)}
+            {categoriesList.map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>)}
           </select>
         </div>
         <div className="col-md-4 mb-2">
@@ -216,10 +396,36 @@ function AdminDashboard({ onLogout }) {
             <button className="btn btn-success" onClick={handleAddCategory}>Add</button>
           </div>
           <ul className="list-group list-group-flush">
-            {customCategories.map(cat => (
-              <li key={cat} className="list-group-item d-flex justify-content-between align-items-center">
-                {cat}
-                <button className="btn btn-sm btn-danger" onClick={() => handleRemoveCategory(cat)}>Remove</button>
+            {categories.map((cat, idx) => (
+              <li key={cat.id} className="list-group-item d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
+                  {editingCategory === cat.id ? (
+                    <>
+                      <input
+                        type="text"
+                        className="form-control me-2"
+                        value={editingCategoryName}
+                        onChange={e => setEditingCategoryName(e.target.value)}
+                        onBlur={() => saveEditCategory(cat)}
+                        onKeyDown={e => { if (e.key === 'Enter') saveEditCategory(cat); }}
+                        autoFocus
+                        style={{ width: 150 }}
+                      />
+                      <button className="btn btn-sm btn-primary me-2" onClick={() => saveEditCategory(cat)}>Save</button>
+                      <button className="btn btn-sm btn-secondary" onClick={() => setEditingCategory(null)}>Cancel</button>
+                    </>
+                  ) : (
+                    <>
+                      <span>{cat.name}</span>
+                      <button className="btn btn-sm btn-link ms-2" onClick={() => startEditCategory(cat)}>Edit</button>
+                    </>
+                  )}
+                </div>
+                <div>
+                  <button className="btn btn-sm btn-outline-secondary me-1" disabled={idx === 0} onClick={() => moveCategory(idx, 'up')}>↑</button>
+                  <button className="btn btn-sm btn-outline-secondary me-1" disabled={idx === categories.length - 1} onClick={() => moveCategory(idx, 'down')}>↓</button>
+                  <button className="btn btn-sm btn-danger" onClick={() => handleRemoveCategory(cat.id)}>Remove</button>
+                </div>
               </li>
             ))}
           </ul>
@@ -289,7 +495,7 @@ function AdminDashboard({ onLogout }) {
         onHide={() => setShowEditModal(false)}
         product={editProduct}
         onSave={handleEditProduct}
-        categories={customCategories}
+        categories={categories.map(c => c.name)}
       />
       {addModal && (
         <EditProductModal
@@ -297,9 +503,125 @@ function AdminDashboard({ onLogout }) {
           onHide={() => setAddModal(false)}
           product={{ name: '', description: '', price: '', category: '', images: [] }}
           onSave={handleAddProduct}
-          categories={customCategories}
+          categories={categories.map(c => c.name)}
         />
       )}
+      {/* Feedback Management Section */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">User Feedback</h5>
+          {feedbackLoading ? (
+            <div>Loading feedback...</div>
+          ) : feedbackError ? (
+            <div className="alert alert-danger">{feedbackError}</div>
+          ) : feedback.length === 0 ? (
+            <div>No feedback yet.</div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-bordered align-middle">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Comment</th>
+                    <th>Rating</th>
+                    <th>Date</th>
+                    <th>Show on Home</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {feedback.map(fb => (
+                    <tr key={fb.id}>
+                      <td>{fb.name}</td>
+                      <td>{fb.comment}</td>
+                      <td>{[...Array(5)].map((_, i) => <i key={i} className={`fa fa-star${i < fb.rating ? '' : '-o'} text-warning`}></i>)}</td>
+                      <td>{new Date(fb.created_at).toLocaleString()}</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={!!fb.show_on_home}
+                          onChange={() => handleToggleShowOnHome(fb.id, fb.show_on_home)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+      {/* System Emails Management Section */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">Order/Contact Notification Emails</h5>
+          <div className="d-flex align-items-center mb-2">
+            <input type="email" className="form-control me-2" placeholder="Add email" value={newSystemEmail} onChange={e => setNewSystemEmail(e.target.value)} />
+            <button className="btn btn-success" onClick={handleAddSystemEmail}>Add</button>
+          </div>
+          {systemEmailError && <div className="alert alert-danger py-2">{systemEmailError}</div>}
+          <ul className="list-group list-group-flush">
+            {systemEmails.map(email => (
+              <li key={email.id} className="list-group-item d-flex justify-content-between align-items-center">
+                {email.email}
+                <button className="btn btn-sm btn-danger" onClick={() => handleRemoveSystemEmail(email.id)}>Remove</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      {/* SMTP Credentials Management Section */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">SMTP Credentials</h5>
+          <div className="row g-2 mb-2">
+            <div className="col-md-2">
+              <input type="text" className="form-control" name="host" placeholder="Host" value={smtpForm.host} onChange={handleSmtpFormChange} />
+            </div>
+            <div className="col-md-1">
+              <input type="number" className="form-control" name="port" placeholder="Port" value={smtpForm.port} onChange={handleSmtpFormChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="text" className="form-control" name="smtp_user" placeholder="SMTP User" value={smtpForm.smtp_user} onChange={handleSmtpFormChange} />
+            </div>
+            <div className="col-md-2">
+              <input type="password" className="form-control" name="pass" placeholder="Password" value={smtpForm.pass} onChange={handleSmtpFormChange} />
+            </div>
+            <div className="col-md-3">
+              <input type="email" className="form-control" name="from_email" placeholder="From Email" value={smtpForm.from_email} onChange={handleSmtpFormChange} />
+            </div>
+            <div className="col-md-2">
+              <button className="btn btn-success w-100" onClick={handleAddSmtpCredential}>Add</button>
+            </div>
+          </div>
+          {smtpError && <div className="alert alert-danger py-2">{smtpError}</div>}
+          <div className="table-responsive">
+            <table className="table table-bordered align-middle">
+              <thead>
+                <tr>
+                  <th>Host</th>
+                  <th>Port</th>
+                  <th>SMTP User</th>
+                  <th>From Email</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {smtpCredentials.map(cred => (
+                  <tr key={cred.id}>
+                    <td>{cred.host}</td>
+                    <td>{cred.port}</td>
+                    <td>{cred.smtp_user}</td>
+                    <td>{cred.from_email}</td>
+                    <td>
+                      <button className="btn btn-sm btn-danger" onClick={() => handleRemoveSmtpCredential(cred.id)}>Remove</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
       {error && <div className="alert alert-danger mt-3">{error}</div>}
     </div>
   );
