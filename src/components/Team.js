@@ -38,7 +38,7 @@ Beyond his professional endeavors, he is also a passionate Climate Change Advoca
 
 const Team = () => {
   const [selected, setSelected] = useState(null);
-
+  
   const handleOpen = idx => setSelected(idx);
   const handleClose = () => setSelected(null);
 
