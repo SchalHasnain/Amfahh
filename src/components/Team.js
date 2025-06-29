@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 
 const TEAM_MEMBERS = [
   {
-    name: 'Dr. Huma Hussain',
+    name: 'Dr. Homa Hussain',
     title: 'Chief Executive',
     image: '/images/humaira.jpg',
+    linkedin: 'https://www.linkedin.com/in/homa-hussain-44120b371?',
     details: 'Dr. Huma Hussain is the Chief Executive of Amfahh Dental & Surgical Instruments.'
   },
   {
     name: 'Dr. Rashid Khan',
     title: 'Chief Advisor',
     image: '/images/rashid.jpg',
+    linkedin: 'https://www.linkedin.com/in/muhammad-khan-3a58b946',
     details: `<strong>We are honored to have Dr. Muhammad Rashid Khan serve as the Chief Advisor for Amfahh Dental & Surgical Instruments.</strong> With an impressive career spanning 35 years in the medical field, Dr. Khan brings a wealth of experience, profound expertise, and invaluable insights to our team.<br/><br/>
 <strong>Qualifications:</strong> MBBS (Pb), MPDSC (East Africa), Dip OH (Ireland), Ph.D. (Colombo, Sri Lanka).<br/><br/>
 Dr. Khan's extensive qualifications include an MBBS (Pb), MPDSC (East Africa), Dip OH (Ireland), and a Ph.D. from Colombo (Sri Lanka). He is a highly respected Medical Specialist and Diabetologist, renowned for his deep understanding of patient care and medical administration.<br/><br/>
@@ -22,6 +24,7 @@ Dr. Khan's guidance ensures that Amfahh remains at the forefront of providing th
     name: 'Hasnain Rafiq',
     title: 'Head of Operations & Marketing',
     image: '/images/hasnain.jpg',
+    linkedin: 'https://www.linkedin.com/in/hasnain-rafiq-684b3b4b',
     details: `<strong>We are proud to introduce Hasnain Rafiq, the Operational Head & Head of Marketing at Amfahh Dental & Surgical Instruments.</strong> With over 15 years of results-driven experience in the UAE, he is a seasoned operations professional with a proven track record of optimizing business processes. He specializes in transforming inefficiencies into competitive advantages, a skill set honed through extensive work in banking operations, project delivery, and governance frameworks.<br/><br/>
 <strong>Expertise:</strong> Streamlining processes, driving strategic growth, operational excellence, and marketing.<br/><br/>
 Mr. Hasnain's expertise lies in his ability to streamline complex processes and drive strategic growth. His dual role at Amfahh is pivotal; he ensures our operations run with maximum efficiency while simultaneously spearheading our marketing initiatives to reach healthcare professionals globally. His deep understanding of operational excellence, combined with his strategic marketing insights, is key to Amfahh's mission of delivering high-quality instruments with exceptional service and ensuring that our commitment to quality is matched by operational excellence and a customer-focused approach, making Amfahh a reliable and efficient partner for all our clients.<br/><br/>
@@ -60,7 +63,7 @@ const Team = () => {
                 </div>
                 {/* Social icons: Only LinkedIn, no Twitter */}
                 <div className="mb-3">
-                  <a href="#" className="me-2"><i className="fab fa-linkedin fa-lg"></i></a>
+                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="me-2"><i className="fab fa-linkedin fa-lg"></i></a>
                 </div>
               </div>
             </div>
