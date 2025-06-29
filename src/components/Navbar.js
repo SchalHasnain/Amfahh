@@ -105,7 +105,7 @@ const Navbar = () => {
               </a>
             </li>
             <li className="nav-item">
-              <button className="btn btn-outline-primary position-relative ms-2" onClick={openCart} style={{ border: 'none', background: 'none' }}>
+              <button className="btn btn-outline-primary position-relative ms-2 cart-btn" onClick={openCart} style={{ border: 'none', background: 'none' }}>
                 <i className="fa fa-shopping-cart fa-lg"></i>
                 {cartCount > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{cartCount}</span>}
               </button>

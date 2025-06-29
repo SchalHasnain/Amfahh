@@ -47,13 +47,6 @@ const CartModal = () => {
     setShowToast(true);
   };
 
-  const handleQuantity = (id, delta) => {
-    const newCart = cart.map(item =>
-      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
-    );
-    updateCart(newCart);
-  };
-
   const handleBuyNow = async (e) => {
     e.preventDefault();
     if (!name || !contact || !email) {
@@ -126,9 +119,11 @@ const CartModal = () => {
                             <td>{item.name}</td>
                             <td>
                               <div className="d-flex align-items-center gap-2">
-                                <button className="btn btn-sm btn-outline-secondary" onClick={() => handleQuantity(item.id, -1)}>-</button>
-                                <span>{item.quantity}</span>
-                                <button className="btn btn-sm btn-outline-secondary" onClick={() => handleQuantity(item.id, 1)}>+</button>
+                                <input type="number" min="1" value={item.quantity} onChange={e => {
+                                  const value = Math.max(1, parseInt(e.target.value) || 1);
+                                  const newCart = cart.map(ci => ci.id === item.id ? { ...ci, quantity: value } : ci);
+                                  updateCart(newCart);
+                                }} style={{ width: 60 }} className="form-control form-control-sm" />
                               </div>
                             </td>
                             <td>

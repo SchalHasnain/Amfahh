@@ -349,3 +349,10 @@ html, body, #root {
 .flex-grow-1 {
   flex: 1 1 auto;
 }
+
+.cart-btn:hover i {
+  color: #0d6efd !important; /* Bootstrap primary color for visibility */
+  background: #e9ecef;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}

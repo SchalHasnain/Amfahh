@@ -5,8 +5,12 @@ const TEAM_MEMBERS = [
     name: 'Dr. Homa Hussain',
     title: 'Chief Executive',
     image: '/images/humaira.jpg',
-    linkedin: 'https://www.linkedin.com/in/homa-hussain-44120b371?',
-    details: 'Dr. Huma Hussain is the Chief Executive of Amfahh Dental & Surgical Instruments.'
+    linkedin: 'https://www.linkedin.com/in/homa-hussain-44120b371',
+    details: `<strong>Our Chief Executive Officer: Dr. Homa Hussain</strong><br/><br/>
+Leading Amfahh Dental & Surgical Instruments as our Chief Executive Officer is Dr. Homa Hussain. With a remarkable 35 years of experience in the medical field, Dr. Homa Hussain brings a comprehensive and unique blend of expertise to our organization.<br/><br/>
+Dr. Homa Hussain is a highly qualified professional, holding an MBBS (Pb) and MPDSC (East Africa), and is a registered RMP. Beyond her foundational medical training, she is also a skilled General Practitioner, Nutritionist, and possesses significant expertise in alternative medicine, offering a holistic perspective to healthcare.<br/><br/>
+Her extensive career includes impactful roles such as being the Ex-In-Charge of the Community Welfare Clinic at PARCO MCR and the In-charge of the Social Security Clinic Khewra. She has also served as a Private Consultant at SKS Clinic, Lahore, Pakistan, and as a Consultant at Rasheed Akhtar Hospital.<br/><br/>
+Dr. Hussain's vast experience in diverse medical settings, coupled with her broad medical knowledge and leadership capabilities, is instrumental in steering Amfahh towards its vision of providing top-tier dental and surgical instruments and fostering excellence in global healthcare.`
   },
   {
     name: 'Dr. Rashid Khan',
@@ -28,7 +32,6 @@ Dr. Khan's guidance ensures that Amfahh remains at the forefront of providing th
     details: `<strong>We are proud to introduce Hasnain Rafiq, the Operational Head & Head of Marketing at Amfahh Dental & Surgical Instruments.</strong> With over 15 years of results-driven experience in the UAE, he is a seasoned operations professional with a proven track record of optimizing business processes. He specializes in transforming inefficiencies into competitive advantages, a skill set honed through extensive work in banking operations, project delivery, and governance frameworks.<br/><br/>
 <strong>Expertise:</strong> Streamlining processes, driving strategic growth, operational excellence, and marketing.<br/><br/>
 Mr. Hasnain's expertise lies in his ability to streamline complex processes and drive strategic growth. His dual role at Amfahh is pivotal; he ensures our operations run with maximum efficiency while simultaneously spearheading our marketing initiatives to reach healthcare professionals globally. His deep understanding of operational excellence, combined with his strategic marketing insights, is key to Amfahh's mission of delivering high-quality instruments with exceptional service and ensuring that our commitment to quality is matched by operational excellence and a customer-focused approach, making Amfahh a reliable and efficient partner for all our clients.<br/><br/>
-<strong>Climate Advocacy:</strong> Passionate about climate change, shares insights on LinkedIn.<br/><br/>
 Beyond his professional endeavors, he is also a passionate Climate Change Advocate. He actively contributes to raising awareness and sharing vital information on climate-related issues by writing insightful articles on LinkedIn, demonstrating his commitment to a sustainable future.`
   }
 ];

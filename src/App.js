@@ -62,7 +62,6 @@ function App() {
                   <MissionValues />
                   <Team />
                   <Timeline />
-                  
                   <Testimonials />
                 </>
               }
