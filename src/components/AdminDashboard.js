@@ -38,6 +38,9 @@ function AdminDashboard({ onLogout }) {
   const [smtpCredentials, setSmtpCredentials] = useState([]);
   const [smtpForm, setSmtpForm] = useState({ host: '', port: '', smtp_user: '', pass: '', from_email: '' });
   const [smtpError, setSmtpError] = useState('');
+  const [footerDetails, setFooterDetails] = useState({ about_text: '', email: '', facebook: '', instagram: '', linkedin: '' });
+  const [footerMsg, setFooterMsg] = useState('');
+  const [footerLoading, setFooterLoading] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -93,12 +96,29 @@ function AdminDashboard({ onLogout }) {
     }
   };
 
+  const fetchFooterDetails = async () => {
+    try {
+      const res = await fetch('/api/footer-details');
+      const data = await res.json();
+      setFooterDetails({
+        about_text: data.about_text || '',
+        email: data.email || '',
+        facebook: data.facebook || '',
+        instagram: data.instagram || '',
+        linkedin: data.linkedin || ''
+      });
+    } catch (err) {
+      setFooterMsg('Failed to load footer details.');
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
     fetchFeedback();
     fetchSystemEmails();
     fetchSmtpCredentials();
+    fetchFooterDetails();
   }, []);
 
   // Stats
@@ -332,8 +352,31 @@ function AdminDashboard({ onLogout }) {
     }
   };
 
+  const handleFooterChange = e => {
+    setFooterDetails({ ...footerDetails, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveFooter = async e => {
+    e.preventDefault();
+    setFooterLoading(true);
+    setFooterMsg('');
+    try {
+      const res = await fetch('/api/footer-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(footerDetails)
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      setFooterMsg('Footer details updated successfully!');
+      fetchFooterDetails();
+    } catch (err) {
+      setFooterMsg('Failed to save footer details.');
+    }
+    setFooterLoading(false);
+  };
+
   return (
-    <div className="container mt-5">
+    <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Admin Dashboard</h2>
         <div>
@@ -620,6 +663,36 @@ function AdminDashboard({ onLogout }) {
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+      {/* Footer Details Section */}
+      <div className="card my-5">
+        <div className="card-header bg-primary text-white fw-bold">Footer Details</div>
+        <div className="card-body">
+          <form onSubmit={handleSaveFooter}>
+            <div className="mb-3">
+              <label className="form-label fw-bold">About Text</label>
+              <textarea className="form-control" name="about_text" value={footerDetails.about_text} onChange={handleFooterChange} rows={2} required />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-bold">Contact Email</label>
+              <input className="form-control" name="email" value={footerDetails.email} onChange={handleFooterChange} type="email" required />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-bold">Facebook Link</label>
+              <input className="form-control" name="facebook" value={footerDetails.facebook} onChange={handleFooterChange} type="url" />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-bold">Instagram Link</label>
+              <input className="form-control" name="instagram" value={footerDetails.instagram} onChange={handleFooterChange} type="url" />
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-bold">LinkedIn Link</label>
+              <input className="form-control" name="linkedin" value={footerDetails.linkedin} onChange={handleFooterChange} type="url" />
+            </div>
+            {footerMsg && <div className={`alert ${footerMsg.includes('success') ? 'alert-success' : 'alert-danger'} py-2`}>{footerMsg}</div>}
+            <button className="btn btn-primary fw-bold" type="submit" disabled={footerLoading}>{footerLoading ? 'Saving...' : 'Save Footer Details'}</button>
+          </form>
         </div>
       </div>
       {error && <div className="alert alert-danger mt-3">{error}</div>}

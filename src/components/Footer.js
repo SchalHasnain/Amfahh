@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Footer = () => {
+  const [footer, setFooter] = useState({});
+
+  useEffect(() => {
+    fetch('/api/footer-details')
+      .then(res => res.json())
+      .then(data => setFooter(data || {}));
+  }, []);
+
   return (
     <footer>
        <div class="container">
@@ -8,13 +16,12 @@ const Footer = () => {
                 <div class="col-lg-4 col-md-6">
                     <h4 class="footer-heading">About Amfahh</h4>
                     <p>
-                        Leading provider of high-quality surgical and specialty medical products serving healthcare professionals worldwide.
+                        {footer.about_text || 'Leading provider of high-quality surgical and specialty medical products serving healthcare professionals worldwide.'}
                     </p>
                     <div class="social-media mt-4">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        {footer.facebook && <a href={footer.facebook} target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>}
+                        {footer.instagram && <a href={footer.instagram} target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>}
+                        {footer.linkedin && <a href={footer.linkedin} target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>}
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-6">
@@ -30,7 +37,7 @@ const Footer = () => {
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="footer-heading">Contact Information</h4>
-                    <p><i class="fas fa-envelope me-2"></i> info@Amfahh.com</p>
+                    <p><i class="fas fa-envelope me-2"></i> {footer.email || 'info@Amfahh.com'}</p>
                 </div>
             </div>
             <div class="copyright">

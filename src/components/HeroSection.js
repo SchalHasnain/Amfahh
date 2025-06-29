@@ -22,7 +22,7 @@ const HeroSection = () => {
               transition={{ duration: 1 }}
               className="lead"
             >
-              Browse our extensive range of surgical and special medical products.
+              Browse our extensive range of Surgical, Dental and Special medical products.
             </motion.p>
           </div>
           <div className="col-lg-4 text-lg-end text-center mt-4 mt-lg-0">
@@ -33,7 +33,7 @@ const HeroSection = () => {
               whileTap={{ scale: 0.95 }}
             >
               <span className="position-absolute top-0 start-0 w-100 h-100 bg-secondary opacity-0 transition-opacity" style={{ transition: "opacity 0.3s" }}></span>
-              <span className="position-relative">Explore Products</span>
+              <span className="position-relative text-primary">Explore Products</span>
             </motion.a>
           </div>
         </div>

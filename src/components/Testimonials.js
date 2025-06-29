@@ -18,7 +18,7 @@ const Testimonials = () => {
       <div className="container">
         <div className="row justify-content-center mb-5">
           <div className="col-lg-8 text-center">
-            <h2 className="fw-bold mb-3" data-aos="fade-up">What Our Clients Say</h2>
+            <h2 className="fw-bold mb-3 text-primary" data-aos="fade-up">What Our Clients Say</h2>
             <p className="lead" data-aos="fade-up" data-aos-delay="200">
               Testimonials from healthcare professionals who trust our products
             </p>

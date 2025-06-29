@@ -45,7 +45,7 @@ const QuickViewModal = ({ show, onHide, product }) => {
               </div>
               <div className="col-md-6">
                 <h4>{product.name}</h4>
-                <p className="text-muted">{product.category}</p>
+                <p className="text-muted"><strong>Category:</strong> {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1).toLowerCase() : 'Uncategorized'}</p>
                 <p>{product.description}</p>
                 <button className="btn btn-primary me-2">Add to Cart</button>
                 <button className="btn btn-success">Buy Now</button>

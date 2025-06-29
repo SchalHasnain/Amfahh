@@ -133,6 +133,14 @@ async function ensureTable() {
     pass TEXT NOT NULL,
     from_email TEXT NOT NULL
   )`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS footer_details (
+    id SERIAL PRIMARY KEY,
+    about_text TEXT,
+    email TEXT,
+    facebook TEXT,
+    instagram TEXT,
+    linkedin TEXT
+  )`);
 }
 ensureTable();
 
@@ -371,6 +379,33 @@ app.post('/api/contact', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Footer details endpoints
+app.get('/api/footer-details', async (req, res) => {
+  const { rows } = await pool.query('SELECT * FROM footer_details ORDER BY id DESC LIMIT 1');
+  res.json(rows[0] || {});
+});
+app.post('/api/footer-details', async (req, res) => {
+  const { about_text, email, facebook, instagram, linkedin } = req.body;
+  // Only one row allowed, so upsert
+  const { rows } = await pool.query('SELECT id FROM footer_details ORDER BY id DESC LIMIT 1');
+  if (rows.length) {
+    // Update
+    const id = rows[0].id;
+    const result = await pool.query(
+      'UPDATE footer_details SET about_text=$1, email=$2, facebook=$3, instagram=$4, linkedin=$5 WHERE id=$6 RETURNING *',
+      [about_text, email, facebook, instagram, linkedin, id]
+    );
+    res.json(result.rows[0]);
+  } else {
+    // Insert
+    const result = await pool.query(
+      'INSERT INTO footer_details (about_text, email, facebook, instagram, linkedin) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [about_text, email, facebook, instagram, linkedin]
+    );
+    res.json(result.rows[0]);
   }
 });
 

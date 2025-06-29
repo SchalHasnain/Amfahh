@@ -1,60 +1,65 @@
-import React from 'react';
+import React from "react";
+import { motion } from "framer-motion";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const MissionValues = () => {
-  return (
-    <section className="py-5 bg-light">
-      <div className="container">
-        <div className="row justify-content-center mb-5">
-          <div className="col-lg-8 text-center">
-            <h2 className="fw-bold mb-3" data-aos="fade-up">
-              Our Mission & Values
-            </h2>
-            <p className="lead" data-aos="fade-up" data-aos-delay="200">
-              Dedicated to improving healthcare outcomes through innovative medical solutions
-            </p>
-          </div>
-        </div>
-        <div className="row g-4">
-          <div className="col-md-4" data-aos="fade-up">
-            <div className="feature-box">
-              <div className="feature-icon">
-                <i className="fas fa-heartbeat"></i>
-              </div>
-              <h4>Quality First</h4>
-              <p>
-                We never compromise on the quality of our products. Each item undergoes rigorous
-                testing to ensure it meets our stringent standards and regulatory requirements.
-              </p>
-            </div>
-          </div>
-          <div className="col-md-4" data-aos="fade-up" data-aos-delay="200">
-            <div className="feature-box">
-              <div className="feature-icon">
-                <i className="fas fa-microscope"></i>
-              </div>
-              <h4>Innovation</h4>
-              <p>
-                We continuously invest in research and development to create innovative
-                solutions that address emerging healthcare challenges and improve patient care.
-              </p>
-            </div>
-          </div>
-          <div className="col-md-4" data-aos="fade-up" data-aos-delay="300">
-            <div className="feature-box">
-              <div className="feature-icon">
-                <i className="fas fa-users"></i>
-              </div>
-              <h4>Customer Focus</h4>
-              <p>
-                We listen to our customers and work collaboratively to understand their needs,
-                providing responsive support and tailored solutions.
-              </p>
-            </div>
-          </div>
+const MissionValues = () => (
+  <section className="position-relative bg-white py-5">
+    <div className="container">
+      <div className="row justify-content-center mb-5">
+        <div className="col-lg-8 text-center">
+          <motion.h2
+            initial={{ opacity: 0, y: -30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            viewport={{ once: true }}
+            className="fw-bold display-5 mb-4 text-primary"
+          >
+            Vision
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="lead px-md-4"
+          >
+            At Amfahh, our vision is to be the foremost online destination for dental and surgical instruments worldwide, recognized for our unwavering commitment to quality, innovation, and customer satisfaction. We envision a future where every healthcare professional has seamless access to the most advanced and reliable instruments, empowering them to deliver superior patient outcomes and elevate global healthcare standards. We aim to foster a healthier world, one precise instrument at a time.
+          </motion.p>
         </div>
       </div>
-    </section>
-  );
-};
+      <div className="row justify-content-center">
+        <div className="col-lg-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            viewport={{ once: true }}
+            className="card shadow border-0 p-4 mb-4 bg-light"
+            style={{ borderRadius: "1.5rem" }}
+          >
+            <motion.h2
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="fw-bold mb-3 text-primary"
+            >
+              Mission
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.5 }}
+              viewport={{ once: true }}
+              className="lead mb-0"
+            >
+              Our mission at Amfahh is to empower healthcare professionals by providing them with meticulously sourced, high-quality dental and surgical instruments through a user-friendly and reliable online platform. We are dedicated to ensuring every product meets rigorous international standards for precision, durability, and safety. We strive to offer an extensive and ever-evolving inventory, supported by exceptional customer service and efficient delivery. By constantly innovating our offerings and streamlining the procurement process, we aim to be the trusted partner that enables our clients to perform with confidence and excellence, ultimately contributing to better patient care globally.
+            </motion.p>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
 
 export default MissionValues;
