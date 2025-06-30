@@ -52,7 +52,6 @@ const Product = ({ product }) => {
       />
       <div className="card-body">
         <h5 className="card-title">{product.name}</h5>
-        <p className="card-text">{product.description}</p>
         <button
           className="btn btn-primary me-2"
           onClick={handleAddToCart}

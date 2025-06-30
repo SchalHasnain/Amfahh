@@ -31,7 +31,17 @@ const CartModal = () => {
   useEffect(() => {
     const handler = () => setCart(getCartFromStorage());
     window.addEventListener('cartUpdated', handler);
-    return () => window.removeEventListener('cartUpdated', handler);
+    // Listen for modal close to reset success
+    const modal = document.getElementById('cartModal');
+    if (modal) {
+      modal.addEventListener('hidden.bs.modal', () => setSuccess(false));
+    }
+    return () => {
+      window.removeEventListener('cartUpdated', handler);
+      if (modal) {
+        modal.removeEventListener('hidden.bs.modal', () => setSuccess(false));
+      }
+    };
   }, []);
 
   const updateCart = (newCart) => {
@@ -123,7 +133,7 @@ const CartModal = () => {
                                   const value = Math.max(1, parseInt(e.target.value) || 1);
                                   const newCart = cart.map(ci => ci.id === item.id ? { ...ci, quantity: value } : ci);
                                   updateCart(newCart);
-                                }} style={{ width: 60 }} className="form-control form-control-sm" />
+                                }} style={{ width: 100 }} className="form-control form-control-sm" />
                               </div>
                             </td>
                             <td>

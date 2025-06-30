@@ -1,8 +1,37 @@
 import React from 'react';
 
+const addToCartHelper = (product, quantity = 1) => {
+  let cart = [];
+  try {
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
+  } catch {}
+  const existing = cart.find(item => item.id === product.id);
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    cart.push({ ...product, quantity });
+  }
+  localStorage.setItem('cart', JSON.stringify(cart));
+  window.dispatchEvent(new Event('cartUpdated'));
+};
+
 const QuickViewModal = ({ show, onHide, product }) => {
   if (!show || !product) return null;
   const images = Array.isArray(product.images) ? product.images : (product.image ? [product.image] : []);
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    addToCartHelper(product);
+    window.dispatchEvent(new CustomEvent('cartToast', { detail: 'Added to cart!' }));
+  };
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    addToCartHelper(product);
+    const cartModal = window.bootstrap && window.bootstrap.Modal.getOrCreateInstance(document.getElementById('cartModal'));
+    if (cartModal) cartModal.show();
+    window.dispatchEvent(new CustomEvent('cartToast', { detail: 'Added to cart!' }));
+  };
 
   return (
     <div className="modal show d-block" tabIndex="-1" style={{ background: 'rgba(0,0,0,0.5)' }}>
@@ -46,9 +75,8 @@ const QuickViewModal = ({ show, onHide, product }) => {
               <div className="col-md-6">
                 <h4>{product.name}</h4>
                 <p className="text-muted"><strong>Category:</strong> {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1).toLowerCase() : 'Uncategorized'}</p>
-                <p>{product.description}</p>
-                <button className="btn btn-primary me-2">Add to Cart</button>
-                <button className="btn btn-success">Buy Now</button>
+                <button className="btn btn-primary me-2" onClick={handleAddToCart}>Add to Cart</button>
+                <button className="btn btn-success" onClick={handleBuyNow}>Buy Now</button>
               </div>
             </div>
           </div>

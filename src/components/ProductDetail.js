@@ -29,6 +29,12 @@ const ProductDetail = () => {
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
   const carouselRef = useRef(null);
+  // For thumbnail slider
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const thumbsPerView = 5;
+  const thumbTotalSlides = product && product.images ? Math.ceil(product.images.length / thumbsPerView) : 1;
+  const handleThumbPrev = () => setThumbIndex(idx => Math.max(0, idx - 1));
+  const handleThumbNext = () => setThumbIndex(idx => Math.min(thumbTotalSlides - 1, idx + 1));
 
   useEffect(() => {
     fetch(`${API_BASE}/api/products`)
@@ -102,7 +108,7 @@ const ProductDetail = () => {
   return (
     <div className="container my-4">
       <div className="row" data-aos="fade-up">
-        <div className="col-md-6 text-center">
+        <div className="col-md-6 text-center mb-4 mb-md-0">
           {/* Bootstrap Carousel for images */}
           {product.images.length > 0 ? (
             <div id="productDetailCarousel" className="carousel slide mb-3" data-bs-ride="carousel" ref={carouselRef}>
@@ -137,8 +143,11 @@ const ProductDetail = () => {
             </div>
           )}
           {/* Thumbnails */}
-          <div className="d-flex justify-content-center mt-3">
-            {product.images.map((img, index) => (
+          <div className="d-flex justify-content-center align-items-center mt-3 position-relative" style={{minHeight: '70px'}}>
+            {product.images.length > thumbsPerView && (
+              <button className="btn btn-sm btn-outline-primary me-2" onClick={handleThumbPrev} disabled={thumbIndex === 0}>&lt;</button>
+            )}
+            {product.images.slice(thumbIndex * thumbsPerView, (thumbIndex + 1) * thumbsPerView).map((img, index) => (
               <img
                 key={index}
                 src={getImageUrl(img)}
@@ -148,13 +157,16 @@ const ProductDetail = () => {
                 onClick={() => setSelectedImage(img)}
               />
             ))}
+            {product.images.length > thumbsPerView && (
+              <button className="btn btn-sm btn-outline-primary ms-2" onClick={handleThumbNext} disabled={thumbIndex === thumbTotalSlides - 1}>&gt;</button>
+            )}
           </div>
         </div>
-        <div className="col-md-6">
+        <div className="col-md-6 d-flex flex-column justify-content-center">
           <h2 className="mb-3">{product.name}</h2>
-          <p className="text-muted"><strong>Category:</strong> {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1).toLowerCase() : 'Uncategorized'}</p>
-          <p>{product.description}</p>
-          <div className="d-flex gap-2 mt-4">
+          <p className="text-muted mb-2"><strong>Category:</strong> {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1).toLowerCase() : 'Uncategorized'}</p>
+          <div className="mb-4" style={{minHeight: '60px'}}>{product.description}</div>
+          <div className="d-flex gap-2 mt-2 flex-wrap">
             <button className="btn btn-primary btn-lg" onClick={handleAddToCart}>Add to Cart</button>
             <button className="btn btn-success btn-lg" onClick={handleBuyNow}>Buy Now</button>
           </div>

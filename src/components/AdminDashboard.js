@@ -123,13 +123,13 @@ function AdminDashboard({ onLogout }) {
 
   // Stats
   const totalProducts = products.length;
-  const totalCategories = new Set(products.map(p => p.category || 'uncategorized')).size;
+  const totalCategories = new Set(products.map(p => (p.category || 'uncategorized').toLowerCase())).size;
   const totalImages = products.reduce((sum, p) => sum + (Array.isArray(p.images) ? p.images.length : 0), 0);
   const categoriesList = ['all', ...categories.map(c => c.name)].filter(Boolean);
 
   // Filter, search, sort
   let filtered = products;
-  if (filterCategory !== 'all') filtered = filtered.filter(p => (p.category || 'uncategorized') === filterCategory);
+  if (filterCategory !== 'all') filtered = filtered.filter(p => (p.category || 'uncategorized').toLowerCase() === filterCategory.toLowerCase());
   if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase()));
   filtered = filtered.sort((a, b) => {
     let valA = a[sortBy];
@@ -142,8 +142,49 @@ function AdminDashboard({ onLogout }) {
   });
 
   // Pagination logic
-  const totalPages = Math.ceil(filtered.length / pageSize);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  // If currentPage is out of range, set to last page
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [totalPages]);
   const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  // Reset currentPage to 1 when filter/search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterCategory, search]);
+
+  // Helper for pagination truncation
+  const getPaginationPages = () => {
+    const pages = [];
+    if (totalPages <= 10) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      if (currentPage <= 5) {
+        for (let i = 1; i <= 7; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 4) {
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 6; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push('...');
+        for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+    // Remove duplicate pages and ellipsis
+    const result = [];
+    let last;
+    for (const p of pages) {
+      if (p !== last) result.push(p);
+      last = p;
+    }
+    return result;
+  };
 
   const handleAddProduct = async (update) => {
     setLoading(true);
@@ -515,16 +556,18 @@ function AdminDashboard({ onLogout }) {
         </table>
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <nav className="d-flex justify-content-center my-3">
-            <ul className="pagination">
+          <nav className="d-flex justify-content-center my-3" style={{overflowX: 'auto'}}>
+            <ul className="pagination flex-nowrap">
               <li className={`page-item${currentPage === 1 ? ' disabled' : ''}`}>
                 <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>&laquo;</button>
               </li>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <li key={i + 1} className={`page-item${currentPage === i + 1 ? ' active' : ''}`}>
-                  <button className="page-link" onClick={() => setCurrentPage(i + 1)}>{i + 1}</button>
-                </li>
-              ))}
+              {getPaginationPages().map((page, idx) =>
+                page === '...'
+                  ? <li key={`ellipsis-${idx}`} className="page-item disabled"><span className="page-link">...</span></li>
+                  : <li key={`page-${page}-${idx}`} className={`page-item${currentPage === page ? ' active' : ''}`}>
+                      <button className="page-link" onClick={() => setCurrentPage(page)}>{page}</button>
+                    </li>
+              )}
               <li className={`page-item${currentPage === totalPages ? ' disabled' : ''}`}>
                 <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>&raquo;</button>
               </li>
