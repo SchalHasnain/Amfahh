@@ -468,7 +468,6 @@ function AdminDashboard({ onLogout }) {
             <option value="price">Price</option>
             <option value="category">Category</option>
           </select>
-          <button className="btn btn-link" onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}>{sortDir === 'asc' ? '↑' : '↓'}</button>
         </div>
       </div>
       {/* Add a section for managing categories above the product table */}
