@@ -16,7 +16,7 @@ const Footer = () => {
                 <div class="col-lg-4 col-md-6">
                     <h4 class="footer-heading">About Amfahh</h4>
                     <p>
-                        {footer.about_text || 'Leading provider of high-quality surgical and specialty medical products serving healthcare professionals worldwide.'}
+                        {footer.about_text || 'Leading provider of high-quality surgical, dental and special medical products serving healthcare professionals worldwide.'}
                     </p>
                     <div class="social-media mt-4">
                         {footer.facebook && <a href={footer.facebook} target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>}
@@ -34,10 +34,11 @@ const Footer = () => {
                     <h4 class="footer-heading">Products</h4>
                     <a href="/products" class="footer-link">Surgical Products</a>
                     <a href="/products" class="footer-link">Special Products</a>
+                    <a href="/products" class="footer-link">Dental Products</a>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="footer-heading">Contact Information</h4>
-                    <p><i class="fas fa-envelope me-2"></i> {footer.email || 'info@Amfahh.com'}</p>
+                    <p><i class="fas fa-envelope me-2"></i> {footer.email || 'amfahhsurgical@gmail.com'}</p>
                 </div>
             </div>
             <div class="copyright">
